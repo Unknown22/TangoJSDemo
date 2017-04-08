@@ -5,7 +5,7 @@ FIREFOX_CONFIG_FILE = "/etc/firefox/syspref.js"
 
 
 def check_and_update_firefox():
-    if _is_firefox_updated():
+    if not _is_firefox_updated():
         firefox_update_answer = input("Your Firefox version is too old. Do you need to update it now? (y/N): ")
         if firefox_update_answer.lower() == 'y':
             _update_firefox()
