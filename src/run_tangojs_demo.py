@@ -1,5 +1,6 @@
 import subprocess
 from time import sleep
+from firefox import check_and_update_firefox
 
 
 def git(*args):
@@ -26,9 +27,15 @@ def _check_requirements():
     requirements = []
     requirements.append(_check_npm())
     requirements.append(_check_node())
+    requirements.append(_check_firefox())
     if False in requirements:
         return False
     return True
+
+
+def _check_firefox():
+    return check_and_update_firefox()
+
 
 def _check_node():
     try:
