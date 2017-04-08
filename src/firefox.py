@@ -9,6 +9,7 @@ def check_and_update_firefox():
         firefox_update_answer = input("Your Firefox version is too old. Do you need to update it now? (y/N): ")
         if firefox_update_answer.lower() == 'y':
             _update_firefox()
+    configure_firefox()
     return _is_firefox_updated()
 
 
