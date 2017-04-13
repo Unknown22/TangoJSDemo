@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import subprocess
 from time import sleep
 from firefox import check_and_update_firefox
