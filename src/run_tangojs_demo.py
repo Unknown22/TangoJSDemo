@@ -1,6 +1,7 @@
 import subprocess
 from time import sleep
 from firefox import check_and_update_firefox
+from system import check_system_compatibility
 
 
 def git(*args):
@@ -131,7 +132,7 @@ def _check_npm_version():
 
 
 if __name__ == "__main__":
-    if _check_requirements():
+    if check_system_compatibility() and _check_requirements():
         print("OK")
         _install_and_run()
     else:
