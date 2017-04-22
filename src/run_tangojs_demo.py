@@ -43,7 +43,7 @@ def _check_firefox():
 def _check_node():
     try:
         node_version = _check_node_version()
-        if int(node_version) < 7:
+        if int(node_version) < 6:
             node_update_answer = input("You need update node. Do you want to do it now? (y/N): ")
             if node_update_answer.lower() == 'y':
                 n_install_process = subprocess.Popen(['sudo', 'npm', 'install', '-g', 'n'])
@@ -51,7 +51,7 @@ def _check_node():
                 node_update_process = subprocess.Popen(['sudo', 'n', 'stable'])
                 out, err = node_update_process.communicate()
                 node_version = _check_node_version()
-                if int(node_version) < 7:
+                if int(node_version) < 6:
                     print("Something went wrong with node update. Try to do it manually and run this script again.")
                     return False
                 return True
@@ -73,14 +73,14 @@ def _check_node_version():
 
 def _check_npm():
     try:
-        if 0 < int(_check_npm_version()) < 4:
+        if 0 < int(_check_npm_version()) < 3:
             if not upgrade_npm():
                 return False
 
         if int(_check_npm_version()) == 0:
             _fix_npm_symlink()
 
-        if int(_check_npm_version()) >= 4:
+        if int(_check_npm_version()) >= 3:
             return True
     except FileNotFoundError:
         npm_install_answer = input("You don't have npm. Do you want to install it now? (y/N): ")
@@ -88,14 +88,14 @@ def _check_npm():
             npm_install = subprocess.Popen(['sudo', 'apt-get', 'install', 'npm'])
             out, err = npm_install.communicate()
 
-            if 0 < int(_check_npm_version()) < 4:
+            if 0 < int(_check_npm_version()) < 3:
                 if not upgrade_npm():
                     return False
 
             if int(_check_npm_version()) == 0:
                 _fix_npm_symlink()
 
-            if int(_check_npm_version()) >= 4:
+            if int(_check_npm_version()) >= 3:
                 return True
             else:
                 return False
