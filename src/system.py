@@ -5,7 +5,7 @@ import re
 
 
 def check_system_compatibility():
-    if platform.system() == "Windows" and platform.release() == 10:
+    if platform.system() == "Windows" and platform.release() == '10':
         return True
     elif platform.system() == "Linux":
         check_system_process = subprocess.Popen(['lsb_release', '-ir'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
