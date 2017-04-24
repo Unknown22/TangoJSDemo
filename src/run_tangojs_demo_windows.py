@@ -2,6 +2,18 @@ from system import check_system_compatibility
 import subprocess
 import urllib.request
 import os
+from firefox import check_and_update_firefox
+from operational_system import OperationalSystem
+from time import sleep
+
+
+def git(*args):
+    out, err = subprocess.Popen(['git'] + list(args), shell=True).communicate()
+
+
+def npm(*args, folder=None):
+    npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder, shell=True)
+    return npm_process
 
 
 def _check_npm_version():
@@ -90,11 +102,18 @@ def _check_node():
 
 
 def _check_firefox():
-    pass
+    return check_and_update_firefox(OperationalSystem.WINDOWS)
 
 
 def _install_and_run():
-    pass
+    git("clone", "git://github.com/tangojs/tangojs-webapp-template")
+    npm("install", folder="tangojs-webapp-template").communicate()
+    npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
+    npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
+    npm("install", "--save", "tangojs-web-components", folder="tangojs-webapp-template").communicate()
+    server_process = npm("run", "server", folder="tangojs-webapp-template")
+    sleep(3)
+    # browser = subprocess.Popen(['firefox'] + ['127.0.0.1:8081'])
 
 
 def _check_requirements():
