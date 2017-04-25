@@ -1,5 +1,6 @@
 import subprocess
 import re
+import urllib.request
 from operational_system import OperationalSystem
 
 FIREFOX_UBUNTU_CONFIG_FILE = "/etc/firefox/syspref.js"
@@ -8,10 +9,17 @@ FIREFOX_WINDOWS_CONFIG_FILE = '\\defaults\\pref\\firefox.js'
 
 def check_and_update_firefox(system=OperationalSystem.UBUNTU):
     if not _is_firefox_updated(system):
-        firefox_update_answer = input("Your Firefox version is too old. Do you need to update it now? (y/N): ")
+        firefox_update_answer = input("Your Firefox version is too old or couldn't find it. Do you need to update/install it now? (y/N): ")
         if firefox_update_answer.lower() == 'y':
             _update_firefox(system)
-    configure_firefox(system=system)
+        else:
+            print("Script couldn't find firefox.")
+            print("(maybe it is installed not in default location? if that so you can continue)")
+            firefox_continue = input("Do you want to continue anyway? (y/N)")
+            if firefox_continue.lower() == 'y':
+                configure_firefox(system)
+                return True
+    configure_firefox(system)
     return _is_firefox_updated(system)
 
 
@@ -32,10 +40,16 @@ def _update_firefox(system=OperationalSystem.UBUNTU):
         firefox_update = subprocess.Popen(['sudo', 'apt-get', 'install', 'firefox'])
         firefox_update.communicate()
     elif system == OperationalSystem.WINDOWS:
-        pass
+        firefox_download_file = "https://download.mozilla.org/?product=firefox-latest&os=win64&lang=en-US"
+        print("Downloading firefox installer")
+        urllib.request.urlretrieve(firefox_download_file, "firefox-setup.exe")
+        print("Running installation")
+        firefox_installation = subprocess.Popen([r"firefox-setup.exe"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        firefox_installation.communicate()
+        return True
 
 
-def _get_firefox_version(system):
+def _get_firefox_version(system=OperationalSystem.UBUNTU):
     global FIREFOX_WINDOWS_CONFIG_FILE
     if system == OperationalSystem.UBUNTU:
         check_firefox = subprocess.Popen(['firefox', '-v'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -84,11 +98,16 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
                     shell=True)
                 add_option_2.communicate()
     elif system == OperationalSystem.WINDOWS:
-        with open(FIREFOX_WINDOWS_CONFIG_FILE, 'r') as content_file:
-            content_file.seek(0)
-            content = content_file.read()
-            option_1 = re.search(r"pref\(\"dom\.webcomponents\.enabled\",true\);", content)
-            option_2 = re.search(r"pref\(\"layout\.css\.grid\.enabled\",true\);", content)
+        option_1 = None
+        option_2 = None
+        try:
+            with open(FIREFOX_WINDOWS_CONFIG_FILE, 'r') as content_file:
+                content_file.seek(0)
+                content = content_file.read()
+                option_1 = re.search(r"pref\(\"dom\.webcomponents\.enabled\",true\);", content)
+                option_2 = re.search(r"pref\(\"layout\.css\.grid\.enabled\",true\);", content)
+        except FileNotFoundError:
+            pass
 
         if option_1 is None or option_2 is None:
             try:
@@ -98,9 +117,7 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
                     if option_2 is None:
                         content_file.write('pref("layout.css.grid.enabled",true);\n')
             except PermissionError:
-                print("Script have not permission to change firefox settings. Run this script again with administrator privilages or follow readme in 'firefox\settings' this project folder.")
-
-
-if __name__ == "__main__":
-    check_and_update_firefox()
-    configure_firefox()
+                print("Script have not permission to change firefox settings. Run this script again with administrator privilages or follow 'firefox.txt' in readme folder in this project")
+            except FileNotFoundError:
+                print(
+                    "Couldn't find firefox settings file. If you have already Firefox installed follow 'firefox.txt' in readme folder in this project.")

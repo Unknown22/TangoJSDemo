@@ -1,0 +1,6 @@
+1. Open Firefox
+2. Open site: about:config
+3. Find:
+    - dom.webcomponents.enabled
+    - layout.css.grid.enabled
+4. Set above options to True

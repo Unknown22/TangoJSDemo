@@ -113,7 +113,29 @@ def _install_and_run():
     npm("install", "--save", "tangojs-web-components", folder="tangojs-webapp-template").communicate()
     server_process = npm("run", "server", folder="tangojs-webapp-template")
     sleep(3)
-    # browser = subprocess.Popen(['firefox'] + ['127.0.0.1:8081'])
+    run_browser()
+
+
+def run_browser():
+    browser_running = False
+    paths = [
+        '%s:\\Program Files (x86)\\Mozilla Firefox',
+        '%s:\\Program Files\\Mozilla Firefox'
+    ]
+    disks = ('C', 'D', 'E', 'F')
+    for disk in disks:
+        for path in paths:
+            check_path = (path + '\\firefox.exe') % disk
+            try:
+                firefox_version_check = subprocess.Popen([check_path, '127.0.0.1:8080'], stdout=subprocess.PIPE,
+                                                         stderr=subprocess.PIPE,
+                                                         shell=True)
+                out, err = firefox_version_check.communicate()
+                browser_running = True
+            except:
+                continue
+    if not browser_running:
+        print("Couldn't find Firefox. If you already have Firefox installed open address given above from server [default: 127.0.0.1:8080]")
 
 
 def _check_requirements():
@@ -121,7 +143,6 @@ def _check_requirements():
     requirements.append(_check_npm())
     requirements.append(_check_node())
     requirements.append(_check_firefox())
-    print(requirements)
     if False in requirements:
         return False
     return True
