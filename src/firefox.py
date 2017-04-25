@@ -12,6 +12,7 @@ def check_and_update_firefox(system=OperationalSystem.UBUNTU):
         firefox_update_answer = input("Your Firefox version is too old or couldn't find it. Do you need to update/install it now? (y/N): ")
         if firefox_update_answer.lower() == 'y':
             _update_firefox(system)
+            _is_firefox_updated(system)
         else:
             print("Script couldn't find firefox.")
             print("(maybe it is installed not in default location? if that so you can continue)")
