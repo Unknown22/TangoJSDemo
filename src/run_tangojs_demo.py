@@ -3,7 +3,8 @@
 import subprocess
 from time import sleep
 from firefox import check_and_update_firefox
-from system import check_system_compatibility
+from system import check_system_compatibility, get_local_os
+from operational_system import OperationalSystem
 
 
 def git(*args):
@@ -11,7 +12,11 @@ def git(*args):
 
 
 def npm(*args, folder=None):
-    npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder)
+    if get_local_os() == OperationalSystem.UBUNTU:
+        npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder)
+    elif get_local_os() == OperationalSystem.CENTOS:
+        command = "su root -c 'npm " + str(' '.join(args) + "'")
+        npm_process = subprocess.Popen([command], cwd=folder, shell=True)
     return npm_process
 
 
@@ -21,9 +26,9 @@ def _install_and_run():
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-web-components", folder="tangojs-webapp-template").communicate()
-    server_process = npm("run", "server", folder="tangojs-webapp-template")
+    npm("run", "server", folder="tangojs-webapp-template")
     sleep(3)
-    browser = subprocess.Popen(['firefox'] + ['127.0.0.1:8081'])
+    browser = subprocess.Popen(['firefox'] + ['127.0.0.1:8080'])
 
 
 def _check_requirements():
@@ -37,23 +42,26 @@ def _check_requirements():
 
 
 def _check_firefox():
-    return check_and_update_firefox()
+    return check_and_update_firefox(get_local_os())
 
 
 def _check_node():
     try:
         node_version = _check_node_version()
         if int(node_version) < 6:
-            node_update_answer = input("You need update node. Do you want to do it now? (y/N): ")
-            if node_update_answer.lower() == 'y':
-                n_install_process = subprocess.Popen(['sudo', 'npm', 'install', '-g', 'n'])
-                out, err = n_install_process.communicate()
-                node_update_process = subprocess.Popen(['sudo', 'n', 'stable'])
-                out, err = node_update_process.communicate()
-                node_version = _check_node_version()
-                if int(node_version) < 6:
-                    print("Something went wrong with node update. Try to do it manually and run this script again.")
-                    return False
+            if get_local_os() == OperationalSystem.UBUNTU:
+                node_update_answer = input("You need update node. Do you want to do it now? (y/N): ")
+                if node_update_answer.lower() == 'y':
+                    n_install_process = subprocess.Popen(['sudo', 'npm', 'install', '-g', 'n'])
+                    out, err = n_install_process.communicate()
+                    node_update_process = subprocess.Popen(['sudo', 'n', 'stable'])
+                    out, err = node_update_process.communicate()
+                    node_version = _check_node_version()
+                    if int(node_version) < 6:
+                        print("Something went wrong with node update. Try to do it manually and run this script again.")
+                        return False
+                    return True
+            elif get_local_os() == OperationalSystem.CENTOS:
                 return True
             else:
                 return False
@@ -85,7 +93,12 @@ def _check_npm():
     except FileNotFoundError:
         npm_install_answer = input("You don't have npm. Do you want to install it now? (y/N): ")
         if npm_install_answer.lower() == 'y':
-            npm_install = subprocess.Popen(['sudo', 'apt-get', 'install', 'npm'])
+            if get_local_os() == OperationalSystem.UBUNTU:
+                npm_install = subprocess.Popen(['sudo', 'apt-get', 'install', 'npm'])
+            elif get_local_os() == OperationalSystem.CENTOS:
+                download_npm = subprocess.Popen(['curl -s -L https://rpm.nodesource.com/setup_6.x'], shell=True)
+                out, err = download_npm.communicate()
+                npm_install = subprocess.Popen(['su root -c "yum -y install nodejs"'], shell=True)
             out, err = npm_install.communicate()
 
             if 0 < int(_check_npm_version()) < 3:
@@ -99,6 +112,8 @@ def _check_npm():
                 return True
             else:
                 return False
+        else:
+            return False
 
 
 def upgrade_npm():
