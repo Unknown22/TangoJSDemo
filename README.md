@@ -37,7 +37,7 @@ One of the following operating system:
 
 ## Demo
 
-[![TangoJS Demo](https://github.com/Unknown22/TangoJSDemo/tree/master/src/images/demo.png)]
+![TangoJS Demo](https://github.com/Unknown22/TangoJSDemo/tree/master/src/images/demo.png)
 
 ## License
 MIT license
