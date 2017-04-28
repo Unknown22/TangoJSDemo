@@ -62,7 +62,17 @@ def _check_node():
                         return False
                     return True
             elif get_local_os() == OperationalSystem.CENTOS:
-                return True
+                node_update_answer = input("You need update node. Do you want to do it now? (y/N): ")
+                if node_update_answer.lower() == 'y':
+                    n_install_process = subprocess.Popen(['su root -c "npm install -g n"'], shell=True)
+                    out, err = n_install_process.communicate()
+                    node_update_process = subprocess.Popen(['su root -c"n stable"'], shell=True)
+                    out, err = node_update_process.communicate()
+                    node_version = _check_node_version()
+                    if int(node_version) < 6:
+                        print("Something went wrong with node update. Try to do it manually and run this script again.")
+                        return False
+                    return True
             else:
                 return False
     except:
