@@ -30,10 +30,7 @@ def _install_and_run():
     npm("install", "--save", "tangojs-web-components", folder="tangojs-webapp-template").communicate()
     npm("run", "server", folder="tangojs-webapp-template")
     sleep(3)
-    if get_local_os() == OperationalSystem.UBUNTU:
-        browser = subprocess.Popen(['firefox'] + ['127.0.0.1:8081'])
-    else:
-        browser = subprocess.Popen(['firefox'] + ['127.0.0.1:8080'])
+    browser = subprocess.Popen(['firefox'] + ['127.0.0.1:8080'])
 
 
 def _check_requirements():
