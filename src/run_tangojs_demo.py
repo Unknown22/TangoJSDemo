@@ -2,9 +2,11 @@
 
 import subprocess
 from time import sleep
-from firefox import check_and_update_firefox
-from system import check_system_compatibility, get_local_os
-from operational_system import OperationalSystem
+
+from modules.firefox import check_and_update_firefox
+from modules.operational_system import OperationalSystem
+from modules.system import check_system_compatibility, get_local_os
+from modules.windows_runner import run_tangojsdemo_windows
 
 
 def git(*args):
@@ -159,8 +161,11 @@ def _check_npm_version():
 
 
 if __name__ == "__main__":
-    if check_system_compatibility() and _check_requirements():
-        print("OK")
-        _install_and_run()
+    if get_local_os() == OperationalSystem.WINDOWS:
+        run_tangojsdemo_windows()
     else:
-        print("You do not meet requirements.")
+        if check_system_compatibility() and _check_requirements():
+            print("OK")
+            _install_and_run()
+        else:
+            print("You do not meet requirements.")

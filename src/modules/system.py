@@ -1,8 +1,8 @@
-import os
 import platform
-import subprocess
 import re
-from operational_system import OperationalSystem
+import subprocess
+
+from modules.operational_system import OperationalSystem
 
 
 def get_local_os():

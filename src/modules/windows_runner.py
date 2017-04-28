@@ -1,10 +1,10 @@
-from system import check_system_compatibility
 import subprocess
 import urllib.request
-import os
-from firefox import check_and_update_firefox
-from operational_system import OperationalSystem
 from time import sleep
+
+from modules.firefox import check_and_update_firefox
+from modules.operational_system import OperationalSystem
+from modules.system import check_system_compatibility
 
 
 def git(*args):
@@ -138,7 +138,7 @@ def run_browser():
         print("Couldn't find Firefox. If you already have Firefox installed open address given above from server [default: 127.0.0.1:8080]")
 
 
-def _check_requirements():
+def _check_requirements_windows():
     requirements = []
     requirements.append(_check_npm())
     requirements.append(_check_node())
@@ -148,9 +148,12 @@ def _check_requirements():
     return True
 
 
-if __name__ == "__main__":
-    if check_system_compatibility() and _check_requirements():
+def run_tangojsdemo_windows():
+    if check_system_compatibility() and _check_requirements_windows():
         print("OK")
         _install_and_run()
     else:
         print("You do not meet requirements.")
+
+if __name__ == "__main__":
+    run_tangojsdemo_windows()
