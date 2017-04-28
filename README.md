@@ -23,14 +23,8 @@ One of the following operating system:
    ```
 3. Run script:
 
-    * Ubuntu and Centos
     ```bash
     $ python3 run_tangojs_demo.py
-    ```
-
-    * Windows
-    ```bash
-    $ python3 run_tangojs_demo_windows.py
     ```
 
 4. Follow the instructions.
