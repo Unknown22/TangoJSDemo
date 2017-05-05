@@ -36,6 +36,7 @@ def _install_and_run():
     npm("install", "--save", "tangojs-web-components", folder="tangojs-webapp-template").communicate()
     server_process = npm("run", "server", folder="tangojs-webapp-template")
     address_pattern = r'(http://\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}:)(\d{2,4})'
+    is_firefox_running = False
     while True:
         line = server_process.stdout.readline()
         if line != '':
@@ -47,10 +48,15 @@ def _install_and_run():
                 print("Available on:")
                 print("    " + address[0] + address[1])
                 print("Hit CTRL-C to stop the server")
-                break
+                if not is_firefox_running:
+                    is_firefox_running = run_browser(address)
             except:
                 continue
+
+
+def run_browser(address):
     browser = subprocess.Popen(['firefox'] + [address[0] + address[1]])
+    return True
 
 
 def _check_requirements():
