@@ -5,7 +5,7 @@ Project to run demo of TangoJS.
 If you want to know more follow [TangoJS project](http://tangojs.github.io/).
 
 ## Requirements
-* Python 3
+* Python 3.4.4+
 
 One of the following operating system:
 * Windows 10
@@ -15,7 +15,7 @@ One of the following operating system:
 
 ## Getting started
 
-1. Make sure you have Python 3 installed.
+1. Make sure you have Python (minimum 3.4.4 version) installed.
 
 2. Clone this project:
    ```bash

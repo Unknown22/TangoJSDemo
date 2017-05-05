@@ -19,12 +19,12 @@ def check_and_update_firefox(system=OperationalSystem.UBUNTU):
         else:
             print("Script couldn't find firefox.")
             print("(maybe it is installed not in default location? if that so you can continue)")
-            firefox_continue = input("Do you want to continue anyway? (y/N)")
+            firefox_continue = input("Do you want to continue anyway? (y/N): ")
             if firefox_continue.lower() == 'y':
                 configure_firefox(system)
                 return True
     if not configure_firefox(system):
-        continue_firefox = input("Couldn't configure firefox. Do you want to continue anyway? (y/N)")
+        continue_firefox = input("Couldn't configure firefox. Do you want to continue anyway? (y/N): ")
         if continue_firefox.lower() != 'y':
             return False
     return _is_firefox_updated(system)

@@ -1,6 +1,7 @@
 import subprocess
 import urllib.request
 from time import sleep
+import re
 
 from modules.firefox import check_and_update_firefox
 from modules.operational_system import OperationalSystem
@@ -11,8 +12,11 @@ def git(*args):
     out, err = subprocess.Popen(['git'] + list(args), shell=True).communicate()
 
 
-def npm(*args, folder=None):
-    npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder, shell=True)
+def npm(*args, folder=None, read_std=False):
+    if read_std:
+        npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    else:
+        npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder, shell=True)
     return npm_process
 
 
@@ -111,12 +115,26 @@ def _install_and_run():
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-web-components", folder="tangojs-webapp-template").communicate()
-    server_process = npm("run", "server", folder="tangojs-webapp-template")
-    sleep(3)
-    run_browser()
+    server_process = npm("run", "server", folder="tangojs-webapp-template", read_std=True)
+    address_pattern = r'(http://\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}:)(\d{2,4})'
+    while True:
+        line = server_process.stdout.readline()
+        if line != '':
+            message = line.lstrip().decode()
+            address_regex = re.search(address_pattern, message)
+            try:
+                address = address_regex.groups()
+                print("Starting up http-server, serving ./")
+                print("Available on:")
+                print("    " + address[0] + address[1])
+                print("Hit CTRL-C to stop the server")
+                break
+            except:
+                continue
+    run_browser(address)
 
 
-def run_browser():
+def run_browser(address):
     browser_running = False
     paths = [
         '%s:\\Program Files (x86)\\Mozilla Firefox',
@@ -127,9 +145,9 @@ def run_browser():
         for path in paths:
             check_path = (path + '\\firefox.exe') % disk
             try:
-                firefox_version_check = subprocess.Popen([check_path, '127.0.0.1:8080'], stdout=subprocess.PIPE,
+                firefox_version_check = subprocess.Popen([check_path, address[0] + address[1]], stdout=subprocess.PIPE,
                                                          stderr=subprocess.PIPE,
-                                                         shell=True)
+                                                         shell=False)
                 out, err = firefox_version_check.communicate()
                 browser_running = True
             except:

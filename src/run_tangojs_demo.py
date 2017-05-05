@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import subprocess
-from time import sleep
+import re
 
 from modules.firefox import check_and_update_firefox
 from modules.operational_system import OperationalSystem
@@ -13,12 +13,18 @@ def git(*args):
     out, err = subprocess.Popen(['git'] + list(args)).communicate()
 
 
-def npm(*args, folder=None):
+def npm(*args, folder=None, read_std=False):
     if get_local_os() == OperationalSystem.UBUNTU:
-        npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder)
+        if read_std:
+            npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        else:
+            npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder)
     elif get_local_os() == OperationalSystem.CENTOS:
         command = "su root -c 'npm " + str(' '.join(args) + "'")
-        npm_process = subprocess.Popen([command], cwd=folder, shell=True)
+        if read_std:
+            npm_process = subprocess.Popen([command], cwd=folder, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        else:
+            npm_process = subprocess.Popen([command], cwd=folder, shell=True)
     return npm_process
 
 
@@ -28,9 +34,23 @@ def _install_and_run():
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-web-components", folder="tangojs-webapp-template").communicate()
-    npm("run", "server", folder="tangojs-webapp-template")
-    sleep(3)
-    browser = subprocess.Popen(['firefox'] + ['127.0.0.1:8080'])
+    server_process = npm("run", "server", folder="tangojs-webapp-template")
+    address_pattern = r'(http://\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}:)(\d{2,4})'
+    while True:
+        line = server_process.stdout.readline()
+        if line != '':
+            message = line.lstrip().decode()
+            address_regex = re.search(address_pattern, message)
+            try:
+                address = address_regex.groups()
+                print("Starting up http-server, serving ./")
+                print("Available on:")
+                print("    " + address[0] + address[1])
+                print("Hit CTRL-C to stop the server")
+                break
+            except:
+                continue
+    browser = subprocess.Popen(['firefox'] + [address[0] + address[1]])
 
 
 def _check_requirements():
