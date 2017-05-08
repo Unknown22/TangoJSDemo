@@ -38,11 +38,11 @@ def _install_and_run():
     address_pattern = r'(http://\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}:)(\d{2,4})'
     is_firefox_running = False
     while True:
-        line = server_process.stdout.readline()
-        if line != '':
-            message = line.lstrip().decode()
-            address_regex = re.search(address_pattern, message)
-            try:
+        try:
+            line = server_process.stdout.readline()
+            if line != '':
+                message = line.lstrip().decode()
+                address_regex = re.search(address_pattern, message)
                 address = address_regex.groups()
                 print("Starting up http-server, serving ./")
                 print("Available on:")
@@ -50,12 +50,15 @@ def _install_and_run():
                 print("Hit CTRL-C to stop the server")
                 if not is_firefox_running:
                     is_firefox_running = run_browser(address)
-            except:
-                continue
+        except (KeyboardInterrupt, SystemExit):
+            print("\nShutting down server")
+            break
+        except:
+            continue
 
 
 def run_browser(address):
-    browser = subprocess.Popen(['firefox'] + [address[0] + address[1]])
+    subprocess.Popen(['firefox'] + [address[0] + address[1]])
     return True
 
 
