@@ -110,8 +110,8 @@ def _check_firefox():
 
 
 def _install_and_run():
-    out, err = subprocess.Popen(['ls'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    if not 'tangojs-webapp-template' in out.decode():
+    out, err = subprocess.Popen(['dir'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).communicate()
+    if not b'tangojs-webapp-template' in out:
         git("clone", "git://github.com/tangojs/tangojs-webapp-template")
     npm("install", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
@@ -121,11 +121,11 @@ def _install_and_run():
     address_pattern = r'(http://\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}:)(\d{2,4})'
     is_firefox_running = False
     while True:
-        line = server_process.stdout.readline()
-        if line != '':
-            message = line.lstrip().decode()
-            address_regex = re.search(address_pattern, message)
-            try:
+        try:
+            line = server_process.stdout.readline()
+            if line != '':
+                message = line.lstrip().decode()
+                address_regex = re.search(address_pattern, message)
                 address = address_regex.groups()
                 print("Starting up http-server, serving ./")
                 print("Available on:")
@@ -133,11 +133,11 @@ def _install_and_run():
                 print("Hit CTRL-C to stop the server")
                 if not is_firefox_running:
                     is_firefox_running = run_browser(address)
-            except (KeyboardInterrupt, SystemExit):
-                print("\nShutting down server and browser")
-                break
-            except:
-                continue
+        except (KeyboardInterrupt, SystemExit):
+            print("\nShutting down server")
+            break
+        except:
+            continue
 
 
 def run_browser(address):
@@ -154,7 +154,6 @@ def run_browser(address):
                 firefox_version_check = subprocess.Popen([check_path, address[0] + address[1]], stdout=subprocess.PIPE,
                                                          stderr=subprocess.PIPE,
                                                          shell=False)
-                out, err = firefox_version_check.communicate()
                 browser_running = True
                 return True
             except:

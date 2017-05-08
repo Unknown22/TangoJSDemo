@@ -53,7 +53,7 @@ def _install_and_run():
                 if not is_firefox_running:
                     is_firefox_running = run_browser(address)
         except (KeyboardInterrupt, SystemExit):
-            print("\nShutting down server and browser")
+            print("\nShutting down server")
             break
         except Exception:
             continue
