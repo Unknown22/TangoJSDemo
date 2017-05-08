@@ -8,8 +8,8 @@ from modules.operational_system import OperationalSystem
 from modules.system import check_system_compatibility
 
 
-def git(*args):
-    out, err = subprocess.Popen(['git'] + list(args), shell=True).communicate()
+def git(*args, folder=None):
+    subprocess.Popen(['git'] + list(args), shell=True, cwd=folder).communicate()
 
 
 def npm(*args, folder=None, read_std=False):
@@ -110,7 +110,9 @@ def _check_firefox():
 
 
 def _install_and_run():
-    git("clone", "git://github.com/tangojs/tangojs-webapp-template")
+    out, err = subprocess.Popen(['ls'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    if not 'tangojs-webapp-template' in out.decode():
+        git("clone", "git://github.com/tangojs/tangojs-webapp-template")
     npm("install", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
@@ -132,11 +134,10 @@ def _install_and_run():
                 if not is_firefox_running:
                     is_firefox_running = run_browser(address)
             except (KeyboardInterrupt, SystemExit):
-                print("\nShutting down server")
+                print("\nShutting down server and browser")
                 break
             except:
                 continue
-    run_browser(address)
 
 
 def run_browser(address):
@@ -155,10 +156,12 @@ def run_browser(address):
                                                          shell=False)
                 out, err = firefox_version_check.communicate()
                 browser_running = True
+                return True
             except:
                 continue
     if not browser_running:
-        print("Couldn't find Firefox. If you already have Firefox installed open address given above from server [default: 127.0.0.1:8080]")
+        print("Couldn't find Firefox. If you already have Firefox installed open address given above [default: 127.0.0.1:8080]")
+    return True
 
 
 def _check_requirements_windows():
@@ -173,7 +176,7 @@ def _check_requirements_windows():
 
 def run_tangojsdemo_windows():
     if check_system_compatibility() and _check_requirements_windows():
-        print("OK")
+        print("Compatibility and requirements: OK")
         _install_and_run()
     else:
         print("You do not meet requirements.")

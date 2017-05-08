@@ -9,8 +9,8 @@ from modules.system import check_system_compatibility, get_local_os
 from modules.windows_runner import run_tangojsdemo_windows
 
 
-def git(*args):
-    out, err = subprocess.Popen(['git'] + list(args)).communicate()
+def git(*args, folder=None):
+    subprocess.Popen(['git'] + list(args), cwd=folder).communicate()
 
 
 def npm(*args, folder=None, read_std=False):
@@ -29,7 +29,9 @@ def npm(*args, folder=None, read_std=False):
 
 
 def _install_and_run():
-    git("clone", "git://github.com/tangojs/tangojs-webapp-template")
+    out, err = subprocess.Popen(['ls'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    if not 'tangojs-webapp-template' in out.decode():
+        git("clone", "git://github.com/tangojs/tangojs-webapp-template")
     npm("install", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
@@ -51,9 +53,9 @@ def _install_and_run():
                 if not is_firefox_running:
                     is_firefox_running = run_browser(address)
         except (KeyboardInterrupt, SystemExit):
-            print("\nShutting down server")
+            print("\nShutting down server and browser")
             break
-        except:
+        except Exception:
             continue
 
 
@@ -194,7 +196,7 @@ if __name__ == "__main__":
         run_tangojsdemo_windows()
     else:
         if check_system_compatibility() and _check_requirements():
-            print("OK")
+            print("Compatibility and requirements: OK")
             _install_and_run()
         else:
             print("You do not meet requirements.")
