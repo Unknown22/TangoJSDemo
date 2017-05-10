@@ -1,6 +1,8 @@
 import re
 import subprocess
 import urllib.request
+import os
+import sys
 
 from modules.operational_system import OperationalSystem
 
@@ -10,23 +12,26 @@ FIREFOX_CENTOS_CONFIG_FILE = "/etc/firefox/pref/firefox.js"
 
 
 def check_and_update_firefox(system=OperationalSystem.UBUNTU):
-    if not _is_firefox_updated(system):
-        firefox_update_answer = input(
-            "Your Firefox version is too old or couldn't find it. Do you need to update/install it now? (y/N): ")
-        if firefox_update_answer.lower() == 'y':
-            _update_firefox(system)
-            _is_firefox_updated(system)
-        else:
-            print("Script couldn't find firefox.")
-            print("(maybe it is installed not in default location? if that so you can continue)")
-            firefox_continue = input("Do you want to continue anyway? (y/N): ")
-            if firefox_continue.lower() == 'y':
-                configure_firefox(system)
-                return True
-    if not configure_firefox(system):
-        continue_firefox = input("Couldn't configure firefox. Do you want to continue anyway? (y/N): ")
-        if continue_firefox.lower() != 'y':
-            return False
+    try:
+        if not _is_firefox_updated(system):
+            firefox_update_answer = input(
+                "Your Firefox version is too old or couldn't find it. Do you need to update/install it now? (y/N): ")
+            if firefox_update_answer.lower() == 'y':
+                _update_firefox(system)
+                _is_firefox_updated(system)
+            else:
+                print("Script couldn't find firefox.")
+                print("(maybe it is installed not in default location? if that so you can continue)")
+                firefox_continue = input("Do you want to continue anyway? (y/N): ")
+                if firefox_continue.lower() == 'y':
+                    configure_firefox(system)
+                    return True
+        if not configure_firefox(system):
+            continue_firefox = input("Couldn't configure firefox. Do you want to continue anyway? (y/N): ")
+            if continue_firefox.lower() != 'y':
+                return False
+    except (KeyboardInterrupt, SystemExit):
+        return False
     return _is_firefox_updated(system)
 
 
@@ -55,19 +60,27 @@ def _update_firefox(system=OperationalSystem.UBUNTU):
         firefox_installation.communicate()
         return True
     elif system == OperationalSystem.CENTOS:
-        firefox_update = subprocess.Popen(["su root -c 'yum install firefox'"], shell=True)
-        firefox_update.communicate()
+        status = 'not installed'
+        try:
+            firefox_update = subprocess.Popen(['sudo', 'yum', 'install', 'firefox'])
+            out, err = firefox_update.communicate()
+        except (KeyboardInterrupt, SystemExit):
+            return False
 
 
 def _get_firefox_version(system=OperationalSystem.UBUNTU):
     global FIREFOX_WINDOWS_CONFIG_FILE
     if system == OperationalSystem.UBUNTU or system == OperationalSystem.CENTOS:
-        check_firefox = subprocess.Popen(['firefox', '-v'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = check_firefox.communicate()
-        version_pattern = r"\d+\.*\d*\.*\d*"
-        version_regex = re.search(version_pattern, out.decode())
-        firefox_ver = version_regex.group().split('.')
-        return firefox_ver
+        try:
+            check_firefox = subprocess.Popen(['firefox', '-v'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = check_firefox.communicate()
+            version_pattern = r"\d+\.*\d*\.*\d*"
+            version_regex = re.search(version_pattern, out.decode())
+            firefox_ver = version_regex.group().split('.')
+            return firefox_ver
+        except FileNotFoundError:
+            return [0]
+
     elif system == OperationalSystem.WINDOWS:
         paths = [
             '%s:\\Program Files (x86)\\Mozilla Firefox',
@@ -156,12 +169,12 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
                 with open(FIREFOX_CENTOS_CONFIG_FILE, 'a+') as content_file:
                     if option_1 is None:
                         add_option_1 = subprocess.Popen(
-                            'echo \'pref("dom.webcomponents.enabled",true);\' | su root -c "tee -a ' + FIREFOX_CENTOS_CONFIG_FILE + '"',
+                            'echo \'pref("dom.webcomponents.enabled",true);\' | sudo tee -a "' + FIREFOX_CENTOS_CONFIG_FILE + '"',
                             shell=True)
                         add_option_1.communicate()
                     if option_2 is None:
                         add_option_2 = subprocess.Popen(
-                            'echo \'pref("layout.css.grid.enabled",true);\' | su root -c "tee -a ' + FIREFOX_CENTOS_CONFIG_FILE + '"',
+                            'echo \'pref("layout.css.grid.enabled",true);\' | sudo tee -a "' + FIREFOX_CENTOS_CONFIG_FILE + '"',
                             shell=True)
                         add_option_2.communicate()
                 return True

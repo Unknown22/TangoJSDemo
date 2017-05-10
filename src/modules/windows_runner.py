@@ -2,6 +2,7 @@ import subprocess
 import urllib.request
 from time import sleep
 import re
+import sys
 
 from modules.firefox import check_and_update_firefox
 from modules.operational_system import OperationalSystem
@@ -125,16 +126,12 @@ def _install_and_run():
             line = server_process.stdout.readline()
             if line != '':
                 message = line.lstrip().decode()
+                print(message)
                 address_regex = re.search(address_pattern, message)
                 address = address_regex.groups()
-                print("Starting up http-server, serving ./")
-                print("Available on:")
-                print("    " + address[0] + address[1])
-                print("Hit CTRL-C to stop the server")
                 if not is_firefox_running:
                     is_firefox_running = run_browser(address)
         except (KeyboardInterrupt, SystemExit):
-            print("\nShutting down server")
             break
         except:
             continue
@@ -165,9 +162,12 @@ def run_browser(address):
 
 def _check_requirements_windows():
     requirements = []
-    requirements.append(_check_npm())
-    requirements.append(_check_node())
-    requirements.append(_check_firefox())
+    try:
+        requirements.append(_check_npm())
+        requirements.append(_check_node())
+        requirements.append(_check_firefox())
+    except (KeyboardInterrupt, SystemExit):
+        sys.exit(1)
     if False in requirements:
         return False
     return True
@@ -176,7 +176,10 @@ def _check_requirements_windows():
 def run_tangojsdemo_windows():
     if check_system_compatibility() and _check_requirements_windows():
         print("Compatibility and requirements: OK")
-        _install_and_run()
+        try:
+            _install_and_run()
+        except (KeyboardInterrupt, SystemExit):
+            sys.exit(2)
     else:
         print("You do not meet requirements.")
 

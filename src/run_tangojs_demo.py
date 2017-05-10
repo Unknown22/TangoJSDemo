@@ -2,6 +2,9 @@
 
 import subprocess
 import re
+import sys
+import os
+import signal
 
 from modules.firefox import check_and_update_firefox
 from modules.operational_system import OperationalSystem
@@ -14,17 +17,10 @@ def git(*args, folder=None):
 
 
 def npm(*args, folder=None, read_std=False):
-    if get_local_os() == OperationalSystem.UBUNTU:
-        if read_std:
-            npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        else:
-            npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder)
-    elif get_local_os() == OperationalSystem.CENTOS:
-        command = "su root -c 'npm " + str(' '.join(args) + "'")
-        if read_std:
-            npm_process = subprocess.Popen([command], cwd=folder, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        else:
-            npm_process = subprocess.Popen([command], cwd=folder, shell=True)
+    if read_std:
+        npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    else:
+        npm_process = subprocess.Popen(['npm'] + list(args), cwd=folder)
     return npm_process
 
 
@@ -42,25 +38,23 @@ def _install_and_run():
     while True:
         try:
             line = server_process.stdout.readline()
-            if line != '':
-                message = line.lstrip().decode()
-                address_regex = re.search(address_pattern, message)
-                address = address_regex.groups()
-                print("Starting up http-server, serving ./")
-                print("Available on:")
-                print("    " + address[0] + address[1])
-                print("Hit CTRL-C to stop the server")
-                if not is_firefox_running:
-                    is_firefox_running = run_browser(address)
         except (KeyboardInterrupt, SystemExit):
-            print("\nShutting down server")
             break
-        except Exception:
+        message = line.lstrip().decode()
+        print(message)
+        address_regex = re.search(address_pattern, message)
+        try:
+            address = address_regex.groups()
+            if not is_firefox_running:
+                is_firefox_running = run_browser(address)
+        except AttributeError:
             continue
 
-
 def run_browser(address):
-    subprocess.Popen(['firefox'] + [address[0] + address[1]])
+    try:
+        subprocess.Popen(['firefox'] + [address[0] + address[1]])
+    except Exception:
+        return False
     return True
 
 
@@ -82,7 +76,7 @@ def _check_node():
     try:
         node_version = _check_node_version()
         if int(node_version) < 6:
-            if get_local_os() == OperationalSystem.UBUNTU:
+            if get_local_os() == OperationalSystem.UBUNTU or get_local_os() == OperationalSystem.CENTOS:
                 node_update_answer = input("You need update node. Do you want to do it now? (y/N): ")
                 if node_update_answer.lower() == 'y':
                     n_install_process = subprocess.Popen(['sudo', 'npm', 'install', '-g', 'n'])
@@ -94,20 +88,10 @@ def _check_node():
                         print("Something went wrong with node update. Try to do it manually and run this script again.")
                         return False
                     return True
-            elif get_local_os() == OperationalSystem.CENTOS:
-                node_update_answer = input("You need update node. Do you want to do it now? (y/N): ")
-                if node_update_answer.lower() == 'y':
-                    n_install_process = subprocess.Popen(['su root -c "npm install -g n"'], shell=True)
-                    out, err = n_install_process.communicate()
-                    node_update_process = subprocess.Popen(['su root -c"n stable"'], shell=True)
-                    out, err = node_update_process.communicate()
-                    node_version = _check_node_version()
-                    if int(node_version) < 6:
-                        print("Something went wrong with node update. Try to do it manually and run this script again.")
-                        return False
-                    return True
             else:
                 return False
+    except (KeyboardInterrupt, SystemExit):
+        sys.exit(5)
     except:
         print("Something went wrong with node check/update")
         return False
@@ -134,15 +118,22 @@ def _check_npm():
         if int(_check_npm_version()) >= 3:
             return True
     except FileNotFoundError:
-        npm_install_answer = input("You don't have npm. Do you want to install it now? (y/N): ")
+        try:
+            npm_install_answer = input("You don't have npm. Do you want to install it now? (y/N): ")
+        except (KeyboardInterrupt, SystemExit):
+            sys.exit(1)
         if npm_install_answer.lower() == 'y':
-            if get_local_os() == OperationalSystem.UBUNTU:
-                npm_install = subprocess.Popen(['sudo', 'apt-get', 'install', 'npm'])
-            elif get_local_os() == OperationalSystem.CENTOS:
-                download_npm = subprocess.Popen(['curl -s -L https://rpm.nodesource.com/setup_6.x'], shell=True)
-                out, err = download_npm.communicate()
-                npm_install = subprocess.Popen(['su root -c "yum -y install nodejs"'], shell=True)
-            out, err = npm_install.communicate()
+            try:
+                if get_local_os() == OperationalSystem.UBUNTU:
+                    npm_install = subprocess.Popen(['sudo', 'apt-get', 'install', 'npm'])
+                    out, err = npm_install.communicate()
+                elif get_local_os() == OperationalSystem.CENTOS:
+                    download_npm = subprocess.Popen(['curl -s -L https://rpm.nodesource.com/setup_6.x'], shell=True)
+                    out, err = download_npm.communicate()
+                    npm_install = subprocess.Popen(['sudo', 'yum', '-y', 'install', 'nodejs'])
+                    out, err = npm_install.communicate()
+            except (KeyboardInterrupt, SystemExit):
+                sys.exit(1)
 
             if 0 < int(_check_npm_version()) < 3:
                 if not upgrade_npm():
@@ -161,25 +152,31 @@ def _check_npm():
 
 def upgrade_npm():
     print("You must upgrade npm")
-    update_npm_answer = input("Do you want to do it now? (y/N): ")
-    if update_npm_answer.lower() == 'y':
-        print("npm update start")
-        npm_update = subprocess.Popen(['sudo', 'npm', 'install', '-g', 'npm'])
-        out, err = npm_update.communicate()
-        if int(_check_npm_version()) >= 0:
-            return True
+    try:
+        update_npm_answer = input("Do you want to do it now? (y/N): ")
+        if update_npm_answer.lower() == 'y':
+            print("npm update start")
+            npm_update = subprocess.Popen(['sudo', 'npm', 'install', '-g', 'npm'])
+            out, err = npm_update.communicate()
+            if int(_check_npm_version()) >= 0:
+                return True
+            else:
+                print("Something went wrong with upgrade.")
+                return False
         else:
-            print("Something went wrong with upgrade.")
             return False
-    else:
-        return False
+    except (KeyboardInterrupt, SystemExit):
+        sys.exit(3)
 
 
 def _fix_npm_symlink():
-    symlink_answer = input("Path for node changed after upgrade. Do you want to fix it with symlink? (y/N) :")
-    if symlink_answer.lower() == 'y':
-        symlink_process = subprocess.Popen(['sudo', 'ln', '-s', '/usr/bin/nodejs', '/usr/bin/node'])
-        out, err = symlink_process.communicate()
+    try:
+        symlink_answer = input("Path for node changed after upgrade. Do you want to fix it with symlink? (y/N) :")
+        if symlink_answer.lower() == 'y':
+            symlink_process = subprocess.Popen(['sudo', 'ln', '-s', '/usr/bin/nodejs', '/usr/bin/node'])
+            out, err = symlink_process.communicate()
+    except (KeyboardInterrupt, SystemExit):
+        sys.exit(4)
 
 
 def _check_npm_version():
@@ -197,6 +194,9 @@ if __name__ == "__main__":
     else:
         if check_system_compatibility() and _check_requirements():
             print("Compatibility and requirements: OK")
-            _install_and_run()
+            try:
+                _install_and_run()
+            except (KeyboardInterrupt, SystemExit):
+                sys.exit(6)
         else:
             print("You do not meet requirements.")
