@@ -14,7 +14,7 @@ def safe_read(fname):
 setup(name="tangojs-demo",
       version="0.1.1",
       description="Demo setup for TangoJS",
-      license="GPLv3",
+      license="MIT",
       long_description=safe_read("README.md"),
       include_package_data=True,
       packages=find_packages(),

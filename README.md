@@ -3,6 +3,8 @@
 Project to run demo of TangoJS.
 
 If you want to know more follow [TangoJS project](http://tangojs.github.io/).
+[mTango](https://bitbucket.org/hzgwpn/mtango/wiki/Home) backend support for
+TangoJS.
 
 ## Requirements
 * Python 3.4.4+
@@ -19,12 +21,23 @@ One of the following operating system:
 
 2. Clone this project:
    ```bash
-   $ git clone https://github.com/Unknown22/TangoJSDemo.git && cd TangoJSDemo/src/
+   $ git clone https://github.com/Unknown22/TangoJSDemo.git && cd TangoJSDemo/tangojsdemo/
    ```
-3. Run script:
+
+3. Install requirements:
+  ```bash
+  $ sudo pip3.4 install -r requirements.txt
+  ```
+
+4. Install package:
+  ```bash
+  $ sudo python3.4 setup.py install
+  ```
+
+3. Run command:
 
     ```bash
-    $ python3 run_tangojs_demo.py
+    $ runtangojsdemo
     ```
 
 4. Follow the instructions.

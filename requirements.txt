@@ -1,1 +1,1 @@
-Python>=3.4.4
+setuptools==33.1.1 # for CentOS there is bug in >= 34.0.0 
