@@ -6,10 +6,10 @@ import sys
 import os
 import signal
 
-from modules.firefox import check_and_update_firefox
-from modules.operational_system import OperationalSystem
-from modules.system import check_system_compatibility, get_local_os
-from modules.windows_runner import run_tangojsdemo_windows
+from .modules.firefox import check_and_update_firefox
+from .modules.operational_system import OperationalSystem
+from .modules.system import check_system_compatibility, get_local_os
+from .modules.windows_runner import run_tangojsdemo_windows
 
 
 def git(*args, folder=None):

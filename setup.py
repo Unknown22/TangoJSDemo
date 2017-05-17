@@ -16,10 +16,9 @@ setup(name="tangojs-demo",
       description="Demo setup for TangoJS",
       license="GPLv3",
       long_description=safe_read("README.md"),
-#      package_dir={'': 'tangojsdemo', },
       include_package_data=True,
       packages=find_packages(),
       package_data={'tangojsdemo': ['images/*.png']},
       data_files=[('/usr/share/applications', ['tangojs-demo.desktop'])],
-      scripts=['scripts/runtangojsdemo']
+      entry_points={'console_scripts': ['runtangojsdemo = tangojsdemo:main' ]}
       )
