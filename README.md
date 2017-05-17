@@ -3,11 +3,13 @@
 Project to run demo of TangoJS.
 
 If you want to know more follow [TangoJS project](http://tangojs.github.io/).
-[mTango](https://bitbucket.org/hzgwpn/mtango/wiki/Home) backend support for
+
+[mTango](https://bitbucket.org/hzgwpn/mtango/wiki/Home) is backend support for
 TangoJS.
 
 ## Requirements
 * Python 3.4.4+
+* pip3.4+
 
 One of the following operating system:
 * Windows 10
