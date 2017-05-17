@@ -1,0 +1,5 @@
+include src/images/*
+include src/modules/*
+include src/readme/*
+include src/*
+include maxiv-r3-r3vacca.desktop

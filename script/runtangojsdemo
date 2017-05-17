@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+
+from tangojsdemo import run_tangojs_demo
+
+main()

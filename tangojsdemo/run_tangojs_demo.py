@@ -187,8 +187,7 @@ def _check_npm_version():
         return 0
     return npm_version[0]
 
-
-if __name__ == "__main__":
+def main():
     if get_local_os() == OperationalSystem.WINDOWS:
         run_tangojsdemo_windows()
     else:
@@ -200,3 +199,6 @@ if __name__ == "__main__":
                 sys.exit(6)
         else:
             print("You do not meet requirements.")
+
+if __name__ == "__main__":
+    main()
