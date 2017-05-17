@@ -33,7 +33,7 @@ One of the following operating system:
 
 ## Demo
 
-![TangoJS Demo](src/images/demo.png?raw=true)
+![TangoJS Demo](tangojsdemo/images/demo.png?raw=true)
 
 ## License
 MIT license
