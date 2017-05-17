@@ -10,6 +10,15 @@ TangoJS.
 ## Requirements
 * Python 3.4.4+
 * pip3.4+
+* Mozilla Firefox 45+
+  * enable [`dom.webcomponents.enabled`](about:config)
+  * enable [`layout.css.grid.enabled`](about:config)
+  * use
+    [HTMLImports polyfill](http://webcomponents.org/polyfills/html-imports/)
+  * apply [this patch](https://github.com/mliszcz/html-imports-firefox-patch)
+    just before the polyfill is loaded
+* Google Chrome 49+
+  * enable [experimental-web-platform-features](chrome://flags/#enable-experimental-web-platform-features)
 
 One of the following operating system:
 * Windows 10
@@ -27,14 +36,14 @@ One of the following operating system:
    ```
 
 3. Install requirements:
-  ```bash
-  $ sudo pip3.4 install -r requirements.txt
-  ```
+    ```bash
+    $ sudo pip3.4 install -r requirements.txt
+    ```
 
 4. Install package:
-  ```bash
-  $ sudo python3.4 setup.py install
-  ```
+    ```bash
+    $ sudo python3.4 setup.py install
+    ```
 
 3. Run command:
 
@@ -44,7 +53,7 @@ One of the following operating system:
 
 4. Follow the instructions.
 
-> If browser will open and you see blank tab, try refresh.
+> If browser will open and you see blank tab, try refresh and check requirements
 
 ## Demo
 
