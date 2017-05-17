@@ -112,13 +112,13 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
             option_1 = re.search(r"pref\(\"dom\.webcomponents\.enabled\",true\);", content)
             if option_1 is None:
                 add_option_1 = subprocess.Popen(
-                    'echo \'pref("dom.webcomponents.enabled",true);\' | tee -a ' + FIREFOX_UBUNTU_CONFIG_FILE,
+                    'echo \'pref("dom.webcomponents.enabled",true);\' | sudo tee -a ' + FIREFOX_UBUNTU_CONFIG_FILE,
                     shell=True)
                 add_option_1.communicate()
             option_2 = re.search(r"pref\(\"layout\.css\.grid\.enabled\",true\);", content)
             if option_2 is None:
                 add_option_2 = subprocess.Popen(
-                    'echo \'pref("layout.css.grid.enabled",true);\' | tee -a ' + FIREFOX_UBUNTU_CONFIG_FILE,
+                    'echo \'pref("layout.css.grid.enabled",true);\' | sudo tee -a ' + FIREFOX_UBUNTU_CONFIG_FILE,
                     shell=True)
                 add_option_2.communicate()
         return True
@@ -169,12 +169,12 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
                 with open(FIREFOX_CENTOS_CONFIG_FILE, 'a+') as content_file:
                     if option_1 is None:
                         add_option_1 = subprocess.Popen(
-                            'echo \'pref("dom.webcomponents.enabled",true);\' | sudo tee -a "' + FIREFOX_CENTOS_CONFIG_FILE + '"',
+                            'echo \'pref("dom.webcomponents.enabled",true);\' | tee -a "' + FIREFOX_CENTOS_CONFIG_FILE + '"',
                             shell=True)
                         add_option_1.communicate()
                     if option_2 is None:
                         add_option_2 = subprocess.Popen(
-                            'echo \'pref("layout.css.grid.enabled",true);\' | sudo tee -a "' + FIREFOX_CENTOS_CONFIG_FILE + '"',
+                            'echo \'pref("layout.css.grid.enabled",true);\' | tee -a "' + FIREFOX_CENTOS_CONFIG_FILE + '"',
                             shell=True)
                         add_option_2.communicate()
                 return True
