@@ -9,7 +9,7 @@ from modules.operational_system import OperationalSystem
 
 FIREFOX_UBUNTU_CONFIG_FILE = "/etc/firefox/syspref.js"
 FIREFOX_WINDOWS_CONFIG_FILE = '\\defaults\\pref\\firefox.js'
-FIREFOX_CENTOS_CONFIG_FILE = '.mozilla/firefox/*/*.js'
+FIREFOX_CENTOS_CONFIG_FILE = '/home/*/.mozilla/firefox/*/'
 
 
 def check_and_update_firefox(system=OperationalSystem.UBUNTU):
@@ -156,10 +156,11 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
     elif system == OperationalSystem.CENTOS:
         option_1 = None
         option_2 = None
-        print(glob.glob(FIREFOX_CENTOS_CONFIG_FILE))
-        return False
+        files = glob.glob(FIREFOX_CENTOS_CONFIG_FILE)
+        for file in files:
+            firefox_config_file = file + 'user.js'
         try:
-            with open(FIREFOX_CENTOS_CONFIG_FILE, 'r') as content_file:
+            with open(firefox_config_file, 'r') as content_file:
                 content_file.seek(0)
                 content = content_file.read()
                 option_1 = re.search(r"pref\(\"dom\.webcomponents\.enabled\",true\);", content)
@@ -168,15 +169,15 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
             pass
         if option_1 is None or option_2 is None:
             try:
-                with open(FIREFOX_CENTOS_CONFIG_FILE, 'a+') as content_file:
+                with open(firefox_config_file, 'a+') as content_file:
                     if option_1 is None:
                         add_option_1 = subprocess.Popen(
-                            'echo \'pref("dom.webcomponents.enabled",true);\' | tee -a "' + FIREFOX_CENTOS_CONFIG_FILE + '"',
+                            'echo \'pref("dom.webcomponents.enabled",true);\' | tee -a "' + firefox_config_file + '"',
                             shell=True)
                         add_option_1.communicate()
                     if option_2 is None:
                         add_option_2 = subprocess.Popen(
-                            'echo \'pref("layout.css.grid.enabled",true);\' | tee -a "' + FIREFOX_CENTOS_CONFIG_FILE + '"',
+                            'echo \'pref("layout.css.grid.enabled",true);\' | tee -a "' + firefox_config_file + '"',
                             shell=True)
                         add_option_2.communicate()
                 return True
