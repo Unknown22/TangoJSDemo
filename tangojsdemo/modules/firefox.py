@@ -2,13 +2,13 @@ import re
 import subprocess
 import urllib.request
 import glob
-from time import sleep
+from os.path import expanduser
 
 from .operational_system import OperationalSystem
 
-FIREFOX_UBUNTU_CONFIG_FILE = "/home/*/.mozilla/firefox/*.default/"
+FIREFOX_UBUNTU_CONFIG_FILE = "/.mozilla/firefox/*.default/"
 FIREFOX_WINDOWS_CONFIG_FILE = '\\defaults\\pref\\firefox.js'
-FIREFOX_CENTOS_CONFIG_FILE = '/home/*/.mozilla/firefox/*.default/'
+FIREFOX_CENTOS_CONFIG_FILE = '/.mozilla/firefox/*.default/'
 
 
 def check_and_update_firefox(system=OperationalSystem.UBUNTU):
@@ -110,7 +110,8 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
         option_1 = None
         option_2 = None
         firefox_config_file = ''
-        files = glob.glob(FIREFOX_UBUNTU_CONFIG_FILE)
+        home = expanduser("~")
+        files = glob.glob(home + FIREFOX_UBUNTU_CONFIG_FILE)
         for file in files:
             firefox_config_file = file + 'user.js'
         if firefox_config_file == '':
@@ -181,7 +182,8 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
         option_1 = None
         option_2 = None
         firefox_config_file = ''
-        files = glob.glob(FIREFOX_CENTOS_CONFIG_FILE)
+        home = expanduser("~")
+        files = glob.glob(home + FIREFOX_CENTOS_CONFIG_FILE)
         for file in files:
             firefox_config_file = file + 'user.js'
         if firefox_config_file == '':
