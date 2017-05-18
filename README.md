@@ -18,7 +18,7 @@ TangoJS.
   * apply [this patch](https://github.com/mliszcz/html-imports-firefox-patch)
     just before the polyfill is loaded
 * Google Chrome 49+
-  * enable [experimental-web-platform-features](chrome://flags/#enable-experimental-web-platform-features)
+  * enable [experimental-web-platform-features]( chrome://flags/#enable-experimental-web-platform-features )
 
 One of the following operating system:
 * Windows 10
@@ -32,7 +32,7 @@ One of the following operating system:
 
 2. Clone this project:
    ```bash
-   $ git clone https://github.com/Unknown22/TangoJSDemo.git && cd TangoJSDemo/tangojsdemo/
+   $ git clone https://github.com/Unknown22/TangoJSDemo.git && cd TangoJSDemo/
    ```
 
 3. Install requirements:
@@ -40,18 +40,25 @@ One of the following operating system:
     $ sudo pip3.4 install -r requirements.txt
     ```
 
+4. Run python:
+
+    ```bash
+    $ python3.4 -m tangojsdemo
+    ```
+or    
+
 4. Install package:
     ```bash
     $ sudo python3.4 setup.py install
     ```
 
-3. Run command:
+5. Run command:
 
     ```bash
     $ runtangojsdemo
     ```
 
-4. Follow the instructions.
+6. Follow the instructions.
 
 > If browser will open and you see blank tab, try refresh and check requirements
 
