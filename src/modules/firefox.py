@@ -111,20 +111,38 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
         files = glob.glob(FIREFOX_UBUNTU_CONFIG_FILE)
         for file in files:
             firefox_config_file = file + 'user.js'
-        with open(firefox_config_file, 'r') as content_file:
-            content = content_file.read()
-            option_1 = re.search(r"pref\(\"dom\.webcomponents\.enabled\",true\);", content)
-            if option_1 is None:
-                add_option_1 = subprocess.Popen(
-                    'echo \'pref("dom.webcomponents.enabled",true);\' | tee -a ' + firefox_config_file,
-                    shell=True)
-                add_option_1.communicate()
-            option_2 = re.search(r"pref\(\"layout\.css\.grid\.enabled\",true\);", content)
-            if option_2 is None:
-                add_option_2 = subprocess.Popen(
-                    'echo \'pref("layout.css.grid.enabled",true);\' | tee -a ' + firefox_config_file,
-                    shell=True)
-                add_option_2.communicate()
+        option_1 = None
+        option_2 = None
+        try:
+            with open(firefox_config_file, 'r') as content_file:
+                content_file.seek(0)
+                content = content_file.read()
+                option_1 = re.search(r"pref\(\"dom\.webcomponents\.enabled\",true\);", content)
+                option_2 = re.search(r"pref\(\"layout\.css\.grid\.enabled\",true\);", content)
+        except FileNotFoundError:
+            pass
+        if option_1 is None or option_2 is None:
+            try:
+                with open(firefox_config_file, 'a+') as content_file:
+                    if option_1 is None:
+                        add_option_1 = subprocess.Popen(
+                            'echo \'pref("dom.webcomponents.enabled",true);\' | tee -a "' + firefox_config_file + '"',
+                            shell=True)
+                        add_option_1.communicate()
+                    if option_2 is None:
+                        add_option_2 = subprocess.Popen(
+                            'echo \'pref("layout.css.grid.enabled",true);\' | tee -a "' + firefox_config_file + '"',
+                            shell=True)
+                        add_option_2.communicate()
+                return True
+            except PermissionError:
+                print(
+                    "Script have not permission to change firefox settings. Run this script again with administrator privilages or follow 'firefox.txt' in readme folder in this project")
+                return False
+            except FileNotFoundError:
+                print(
+                    "Couldn't find firefox settings file. If you have already Firefox installed follow 'firefox.txt' in readme folder in this project.")
+                return False
         return True
     elif system == OperationalSystem.WINDOWS:
         option_1 = None
