@@ -7,9 +7,9 @@ import sys
 
 from modules.operational_system import OperationalSystem
 
-FIREFOX_UBUNTU_CONFIG_FILE = "/etc/firefox/syspref.js"
+FIREFOX_UBUNTU_CONFIG_FILE = "/home/*/.mozilla/firefox/*.default/"
 FIREFOX_WINDOWS_CONFIG_FILE = '\\defaults\\pref\\firefox.js'
-FIREFOX_CENTOS_CONFIG_FILE = '/home/*/.mozilla/firefox/*/'
+FIREFOX_CENTOS_CONFIG_FILE = '/home/*/.mozilla/firefox/*.default/'
 
 
 def check_and_update_firefox(system=OperationalSystem.UBUNTU):
@@ -108,18 +108,21 @@ def _get_firefox_version(system=OperationalSystem.UBUNTU):
 
 def configure_firefox(system=OperationalSystem.UBUNTU):
     if system == OperationalSystem.UBUNTU:
-        with open(FIREFOX_UBUNTU_CONFIG_FILE, 'r') as content_file:
+        files = glob.glob(FIREFOX_UBUNTU_CONFIG_FILE)
+        for file in files:
+            firefox_config_file = file + 'user.js'
+        with open(firefox_config_file, 'r') as content_file:
             content = content_file.read()
             option_1 = re.search(r"pref\(\"dom\.webcomponents\.enabled\",true\);", content)
             if option_1 is None:
                 add_option_1 = subprocess.Popen(
-                    'echo \'pref("dom.webcomponents.enabled",true);\' | sudo tee -a ' + FIREFOX_UBUNTU_CONFIG_FILE,
+                    'echo \'pref("dom.webcomponents.enabled",true);\' | tee -a ' + firefox_config_file,
                     shell=True)
                 add_option_1.communicate()
             option_2 = re.search(r"pref\(\"layout\.css\.grid\.enabled\",true\);", content)
             if option_2 is None:
                 add_option_2 = subprocess.Popen(
-                    'echo \'pref("layout.css.grid.enabled",true);\' | sudo tee -a ' + FIREFOX_UBUNTU_CONFIG_FILE,
+                    'echo \'pref("layout.css.grid.enabled",true);\' | tee -a ' + firefox_config_file,
                     shell=True)
                 add_option_2.communicate()
         return True
