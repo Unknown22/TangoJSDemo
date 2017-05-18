@@ -109,12 +109,13 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
     if system == OperationalSystem.UBUNTU:
         option_1 = None
         option_2 = None
-        firefox_start = subprocess.Popen(['firefox'])
-        sleep(3)
-        firefox_start.terminate()
+        firefox_config_file = ''
         files = glob.glob(FIREFOX_UBUNTU_CONFIG_FILE)
         for file in files:
             firefox_config_file = file + 'user.js'
+        if firefox_config_file == '':
+            print('Couldn\'t find default user profile for firefox. If you just installed firefox, open and close firefox, then run this script again.')
+            return False
         try:
             with open(firefox_config_file, 'r') as content_file:
                 content_file.seek(0)
@@ -182,9 +183,13 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
         firefox_start = subprocess.Popen(['firefox'])
         sleep(3)
         firefox_start.terminate()
+        firefox_config_file = ''
         files = glob.glob(FIREFOX_CENTOS_CONFIG_FILE)
         for file in files:
             firefox_config_file = file + 'user.js'
+        if firefox_config_file == '':
+            print('Couldn\'t find default user profile for firefox. If you just installed firefox, open and close firefox, then run this script again.')
+            return False
         try:
             with open(firefox_config_file, 'r') as content_file:
                 content_file.seek(0)
