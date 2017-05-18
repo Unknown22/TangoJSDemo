@@ -9,7 +9,7 @@ from modules.operational_system import OperationalSystem
 
 FIREFOX_UBUNTU_CONFIG_FILE = "/etc/firefox/syspref.js"
 FIREFOX_WINDOWS_CONFIG_FILE = '\\defaults\\pref\\firefox.js'
-FIREFOX_CENTOS_CONFIG_FILE = '.mozilla/firefox/*/user.js'
+FIREFOX_CENTOS_CONFIG_FILE = '.mozilla/firefox/*/*.js'
 
 
 def check_and_update_firefox(system=OperationalSystem.UBUNTU):
