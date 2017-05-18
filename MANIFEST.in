@@ -1,0 +1,5 @@
+include tangojsdemo/images/*
+include tangojsdemo/modules/*
+include tangojsdemo/readme/*
+include scripts/runtangojsdemo
+include maxiv-r3-r3vacca.desktop

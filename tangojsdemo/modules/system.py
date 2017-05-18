@@ -2,7 +2,7 @@ import platform
 import re
 import subprocess
 
-from modules.operational_system import OperationalSystem
+from .operational_system import OperationalSystem
 
 
 def get_local_os():

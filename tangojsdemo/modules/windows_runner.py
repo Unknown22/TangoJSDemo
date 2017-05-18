@@ -4,9 +4,9 @@ from time import sleep
 import re
 import sys
 
-from modules.firefox import check_and_update_firefox
-from modules.operational_system import OperationalSystem
-from modules.system import check_system_compatibility
+from .firefox import check_and_update_firefox
+from .operational_system import OperationalSystem
+from .system import check_system_compatibility
 
 
 def git(*args, folder=None):

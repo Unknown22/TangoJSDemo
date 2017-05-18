@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=TangoJS Demo
+Exec=runtangojsdemo
+Type=Application
+Categories=TangoJS
+Comment=Run demo version
+Terminal=false
