@@ -180,9 +180,6 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
     elif system == OperationalSystem.CENTOS:
         option_1 = None
         option_2 = None
-        firefox_start = subprocess.Popen(['firefox'])
-        sleep(3)
-        firefox_start.terminate()
         firefox_config_file = ''
         files = glob.glob(FIREFOX_CENTOS_CONFIG_FILE)
         for file in files:
