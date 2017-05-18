@@ -1,6 +1,7 @@
 import re
 import subprocess
 import urllib.request
+import glob
 import os
 import sys
 
@@ -8,7 +9,7 @@ from modules.operational_system import OperationalSystem
 
 FIREFOX_UBUNTU_CONFIG_FILE = "/etc/firefox/syspref.js"
 FIREFOX_WINDOWS_CONFIG_FILE = '\\defaults\\pref\\firefox.js'
-FIREFOX_CENTOS_CONFIG_FILE = "/etc/firefox/pref/firefox.js"
+FIREFOX_CENTOS_CONFIG_FILE = '.mozilla/firefox/*/user.js'
 
 
 def check_and_update_firefox(system=OperationalSystem.UBUNTU):
@@ -155,6 +156,8 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
     elif system == OperationalSystem.CENTOS:
         option_1 = None
         option_2 = None
+        print(glob.glob(FIREFOX_CENTOS_CONFIG_FILE))
+        return False
         try:
             with open(FIREFOX_CENTOS_CONFIG_FILE, 'r') as content_file:
                 content_file.seek(0)
@@ -163,7 +166,6 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
                 option_2 = re.search(r"pref\(\"layout\.css\.grid\.enabled\",true\);", content)
         except FileNotFoundError:
             pass
-
         if option_1 is None or option_2 is None:
             try:
                 with open(FIREFOX_CENTOS_CONFIG_FILE, 'a+') as content_file:
