@@ -2,6 +2,7 @@ import re
 import subprocess
 import urllib.request
 import glob
+from time import sleep
 
 from .operational_system import OperationalSystem
 
@@ -106,11 +107,14 @@ def _get_firefox_version(system=OperationalSystem.UBUNTU):
 
 def configure_firefox(system=OperationalSystem.UBUNTU):
     if system == OperationalSystem.UBUNTU:
+        option_1 = None
+        option_2 = None
+        firefox_start = subprocess.Popen(['firefox'])
+        sleep(3)
+        firefox_start.terminate()
         files = glob.glob(FIREFOX_UBUNTU_CONFIG_FILE)
         for file in files:
             firefox_config_file = file + 'user.js'
-        option_1 = None
-        option_2 = None
         try:
             with open(firefox_config_file, 'r') as content_file:
                 content_file.seek(0)
@@ -175,6 +179,9 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
     elif system == OperationalSystem.CENTOS:
         option_1 = None
         option_2 = None
+        firefox_start = subprocess.Popen(['firefox'])
+        sleep(3)
+        firefox_start.terminate()
         files = glob.glob(FIREFOX_CENTOS_CONFIG_FILE)
         for file in files:
             firefox_config_file = file + 'user.js'
