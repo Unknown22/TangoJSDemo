@@ -27,9 +27,11 @@ def npm(*args, folder=None, read_std=False):
 def _install_and_run():
     out, err = subprocess.Popen(['ls'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if not 'tangojs-webapp-template' in out.decode():
-        out, err = git("clone", "git://github.com/tangojs/tangojs-webapp-template")
-        print("out:", out)
-        print("err:", err)
+        git("clone", "git://github.com/tangojs/tangojs-webapp-template")
+        out, err = subprocess.Popen(['ls'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if not 'tangojs-webapp-template' in out.decode():
+            print("Couldn't clone tangojs-webapp-template folder. Do you have internet connection?")
+            return
     npm("install", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
