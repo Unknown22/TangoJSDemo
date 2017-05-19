@@ -13,7 +13,7 @@ from .modules.windows_runner import run_tangojsdemo_windows
 
 
 def git(*args, folder=None):
-    subprocess.Popen(['git'] + list(args), cwd=folder).communicate()
+    return subprocess.Popen(['git'] + list(args), cwd=folder).communicate()
 
 
 def npm(*args, folder=None, read_std=False):
@@ -27,7 +27,9 @@ def npm(*args, folder=None, read_std=False):
 def _install_and_run():
     out, err = subprocess.Popen(['ls'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if not 'tangojs-webapp-template' in out.decode():
-        git("clone", "git://github.com/tangojs/tangojs-webapp-template")
+        out, err = git("clone", "git://github.com/tangojs/tangojs-webapp-template")
+        print("out:", out)
+        print("err:", err)
     npm("install", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
