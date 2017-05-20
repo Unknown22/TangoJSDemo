@@ -13,7 +13,7 @@ from .modules.windows_runner import run_tangojsdemo_windows
 
 
 def git(*args, folder=None):
-    subprocess.Popen(['git'] + list(args), cwd=folder).communicate()
+    return subprocess.Popen(['git'] + list(args), cwd=folder).communicate()
 
 
 def npm(*args, folder=None, read_std=False):
@@ -28,6 +28,10 @@ def _install_and_run():
     out, err = subprocess.Popen(['ls'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
     if not 'tangojs-webapp-template' in out.decode():
         git("clone", "git://github.com/tangojs/tangojs-webapp-template")
+        out, err = subprocess.Popen(['ls'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if not 'tangojs-webapp-template' in out.decode():
+            print("Couldn't clone tangojs-webapp-template folder. Do you have internet connection?")
+            return
     npm("install", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
@@ -60,9 +64,21 @@ def run_browser(address):
 
 def _check_requirements():
     requirements = []
-    requirements.append(_check_npm())
-    requirements.append(_check_node())
-    requirements.append(_check_firefox())
+    try:
+        requirements.append(_check_npm())
+    except FileNotFoundError:
+        print("Couldn't find npm")
+        return False
+    try:
+        requirements.append(_check_node())
+    except FileNotFoundError:
+        print("Couldn't find node")
+        return False
+    try:
+        requirements.append(_check_firefox())
+    except FileNotFoundError:
+        print("Couldn't find firefox")
+        return False
     if False in requirements:
         return False
     return True
@@ -156,8 +172,11 @@ def upgrade_npm():
         update_npm_answer = input("Do you want to do it now? (y/N): ")
         if update_npm_answer.lower() == 'y':
             print("npm update start")
-            npm_update = subprocess.Popen(['sudo', 'npm', 'install', '-g', 'npm'])
+            # npm_update = subprocess.Popen(['sudo', 'npm', 'install', '-g', 'npm'])
+            npm_update = subprocess.Popen(['curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -'], shell=True)
             out, err = npm_update.communicate()
+            npm_update_2 = subprocess.Popen(['sudo', 'apt-get', 'install', '-y', 'nodejs'])
+            out, err = npm_update_2.communicate()
             if int(_check_npm_version()) >= 0:
                 return True
             else:
