@@ -172,8 +172,11 @@ def upgrade_npm():
         update_npm_answer = input("Do you want to do it now? (y/N): ")
         if update_npm_answer.lower() == 'y':
             print("npm update start")
-            npm_update = subprocess.Popen(['sudo', 'npm', 'install', '-g', 'npm'])
+            # npm_update = subprocess.Popen(['sudo', 'npm', 'install', '-g', 'npm'])
+            npm_update = subprocess.Popen(['curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -'], shell=True)
             out, err = npm_update.communicate()
+            npm_update_2 = subprocess.Popen(['sudo', 'apt-get', 'install', '-y', 'nodejs'])
+            out, err = npm_update_2.communicate()
             if int(_check_npm_version()) >= 0:
                 return True
             else:
