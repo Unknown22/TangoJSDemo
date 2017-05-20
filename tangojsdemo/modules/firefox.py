@@ -6,7 +6,7 @@ from os.path import expanduser
 
 from .operational_system import OperationalSystem
 
-FIREFOX_UBUNTU_CONFIG_FILE = "/.mozilla/firefox/*.default/"
+FIREFOX_UBUNTU_CONFIG_FILE = "/etc/firefox/syspref.js"
 FIREFOX_WINDOWS_CONFIG_FILE = '\\defaults\\pref\\firefox.js'
 FIREFOX_CENTOS_CONFIG_FILE = '/.mozilla/firefox/*.default/'
 
@@ -109,16 +109,8 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
     if system == OperationalSystem.UBUNTU:
         option_1 = None
         option_2 = None
-        firefox_config_file = ''
-        home = expanduser("~")
-        files = glob.glob(home + FIREFOX_UBUNTU_CONFIG_FILE)
-        for file in files:
-            firefox_config_file = file + 'user.js'
-        if firefox_config_file == '':
-            print('Couldn\'t find default user profile for firefox. If you just installed firefox, open and close firefox, then run this script again.')
-            return False
         try:
-            with open(firefox_config_file, 'r') as content_file:
+            with open(FIREFOX_UBUNTU_CONFIG_FILE, 'r') as content_file:
                 content_file.seek(0)
                 content = content_file.read()
                 option_1 = re.search(r"pref\(\"dom\.webcomponents\.enabled\",true\);", content)
@@ -127,15 +119,15 @@ def configure_firefox(system=OperationalSystem.UBUNTU):
             pass
         if option_1 is None or option_2 is None:
             try:
-                with open(firefox_config_file, 'a+') as content_file:
+                with open(FIREFOX_UBUNTU_CONFIG_FILE, 'a+') as content_file:
                     if option_1 is None:
                         add_option_1 = subprocess.Popen(
-                            'echo \'pref("dom.webcomponents.enabled",true);\' | tee -a "' + firefox_config_file + '"',
+                            'echo \'pref("dom.webcomponents.enabled",true);\' | sudo tee -a "' + FIREFOX_UBUNTU_CONFIG_FILE + '"',
                             shell=True)
                         add_option_1.communicate()
                     if option_2 is None:
                         add_option_2 = subprocess.Popen(
-                            'echo \'pref("layout.css.grid.enabled",true);\' | tee -a "' + firefox_config_file + '"',
+                            'echo \'pref("layout.css.grid.enabled",true);\' | sudo tee -a "' + FIREFOX_UBUNTU_CONFIG_FILE + '"',
                             shell=True)
                         add_option_2.communicate()
                 return True
