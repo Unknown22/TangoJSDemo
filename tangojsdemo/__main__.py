@@ -64,9 +64,21 @@ def run_browser(address):
 
 def _check_requirements():
     requirements = []
-    requirements.append(_check_npm())
-    requirements.append(_check_node())
-    requirements.append(_check_firefox())
+    try:
+        requirements.append(_check_npm())
+    except FileNotFoundError:
+        print("Couldn't find npm")
+        return False
+    try:
+        requirements.append(_check_node())
+    except FileNotFoundError:
+        print("Couldn't find node")
+        return False
+    try:
+        requirements.append(_check_firefox())
+    except FileNotFoundError:
+        print("Couldn't find firefox")
+        return False
     if False in requirements:
         return False
     return True
