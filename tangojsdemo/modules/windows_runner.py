@@ -1,8 +1,8 @@
 import subprocess
 import urllib.request
-from time import sleep
 import re
 import sys
+import shutil
 
 from .firefox import check_and_update_firefox
 from .operational_system import OperationalSystem
@@ -122,6 +122,11 @@ def _install_and_run():
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-web-components", folder="tangojs-webapp-template").communicate()
+    try:
+        shutil.move('tangojs-webapp-template/index.html', 'tangojs-webapp-template/index2.html')
+    except FileNotFoundError:
+        pass
+    shutil.copyfile('tangojsdemo/index.html', 'tangojs-webapp-template/index.html')
     server_process = npm("run", "server", folder="tangojs-webapp-template", read_std=True)
     address_pattern = r'(http://\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}:)(\d{2,4})'
     is_firefox_running = False
