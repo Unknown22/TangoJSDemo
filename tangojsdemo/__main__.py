@@ -36,6 +36,7 @@ def _install_and_run():
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-web-components", folder="tangojs-webapp-template").communicate()
+    print(os.getcwd())
     shutil.move(os.getcwd() + 'tangojs-webapp-template/index.html', os.getcwd() + 'tangojs-webapp-template/index2.html')
     shutil.copyfile('tangojsdemo/index.html', 'tangojs-webapp-template/index.html')
     server_process = npm("run", "server", folder="tangojs-webapp-template", read_std=True)
