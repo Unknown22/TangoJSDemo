@@ -18,7 +18,7 @@ setup(name="tangojs-demo",
       long_description=safe_read("README.md"),
       include_package_data=True,
       packages=find_packages(),
-      package_data={'tangojsdemo': ['images/*.png', '*.html']},
+      package_data={'tangojsdemo': ['images/*.png']},
       data_files=[('/usr/share/applications', ['tangojs-demo.desktop'])],
       entry_points={'console_scripts': ['runtangojsdemo = tangojsdemo:main' ]}
       )
