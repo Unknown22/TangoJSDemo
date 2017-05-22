@@ -217,7 +217,7 @@ def main():
             print("Compatibility and requirements: OK")
             try:
                 print('TEST 0')
-                # _install_and_run()
+                _install_and_run()
             except (KeyboardInterrupt, SystemExit):
                 sys.exit(6)
         else:
