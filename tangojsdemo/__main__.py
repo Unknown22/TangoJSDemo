@@ -4,6 +4,7 @@ import subprocess
 import re
 import sys
 import shutil
+import os
 
 from .modules.firefox import check_and_update_firefox
 from .modules.operational_system import OperationalSystem
@@ -35,7 +36,7 @@ def _install_and_run():
     npm("install", "--save", "tangojs-core", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-connector-local", folder="tangojs-webapp-template").communicate()
     npm("install", "--save", "tangojs-web-components", folder="tangojs-webapp-template").communicate()
-    shutil.move('tangojs-webapp-template/index.html', 'tangojs-webapp-template/index2.html')
+    shutil.move(os.getcwd() + 'tangojs-webapp-template/index.html', os.getcwd() + 'tangojs-webapp-template/index2.html')
     shutil.copyfile('tangojsdemo/index.html', 'tangojs-webapp-template/index.html')
     server_process = npm("run", "server", folder="tangojs-webapp-template", read_std=True)
     address_pattern = r'(http://\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}:)(\d{2,4})'
