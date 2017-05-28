@@ -12,7 +12,7 @@ def safe_read(fname):
         return ""
 
 # install_requires
-install_requires = []
+install_requires = ['wheel']
 
 python_version = sys.version_info
 if python_version >= (3,4):
