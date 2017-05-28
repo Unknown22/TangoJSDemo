@@ -62,6 +62,28 @@ or
 
 > If browser will open and you see blank tab, try refresh and check requirements
 
+### Build  and install wheel:
+
+1. Clone this project:
+   ```bash
+   $ git clone https://github.com/Unknown22/TangoJSDemo.git && cd TangoJSDemo/
+   ```
+
+2. Install requirements:
+    ```bash
+    $ sudo python3.4 sdist bdist_wheel
+    ```
+
+3. Enter do dist folder:
+    ```bash
+    $ cd dist
+    ```
+
+4. Install wheel package:
+    ```bash
+    $ pip install tangojs_demo-0.X.X-py3-none-any.whl
+    ```
+
 ## Demo
 
 ![TangoJS Demo](tangojsdemo/images/demo.png?raw=true)
