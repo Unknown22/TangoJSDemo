@@ -69,9 +69,9 @@ or
    $ git clone https://github.com/Unknown22/TangoJSDemo.git && cd TangoJSDemo/
    ```
 
-2. Install requirements:
+2. Build wheel:
     ```bash
-    $ sudo python3.4 sdist bdist_wheel
+    $ sudo python3.4 setup.py sdist bdist_wheel
     ```
 
 3. Enter do dist folder:
