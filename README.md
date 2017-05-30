@@ -74,7 +74,7 @@ or
     $ sudo python3.4 setup.py sdist bdist_wheel
     ```
 
-3. Enter do dist folder:
+3. Enter to *dist* folder:
     ```bash
     $ cd dist
     ```
