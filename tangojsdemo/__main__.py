@@ -8,7 +8,7 @@ from .modules.firefox import check_and_update_firefox
 from .modules.operational_system import OperationalSystem
 from .modules.system import check_system_compatibility, get_local_os
 from .modules.windows_runner import run_tangojsdemo_windows
-from .modules.fixed_index_html import index_file_source
+from .modules.fixed_index_html import index_file_source, javascript_file_source
 
 
 def git(*args, folder=None):
@@ -38,6 +38,9 @@ def _install_and_run():
     index_file = open('tangojs-webapp-template/index.html', 'w')
     index_file.write(index_file_source)
     index_file.close()
+    js_file = open('tangojs-webapp-template/javascript.html', 'w')
+    js_file.write(javascript_file_source)
+    js_file.close()
     server_process = npm("run", "server", folder="tangojs-webapp-template", read_std=True)
     address_pattern = r'(http://\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}:)(\d{2,4})'
     is_firefox_running = False
@@ -58,7 +61,7 @@ def _install_and_run():
 
 def run_browser(address):
     try:
-        subprocess.Popen(['firefox'] + [address[0] + address[1]])
+        subprocess.Popen(['firefox'] + [address[0] + address[1]] + [address[0] + address[1] + "/javascript.html"])
     except Exception:
         return False
     return True

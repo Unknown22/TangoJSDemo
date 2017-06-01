@@ -1,4 +1,5 @@
-index_file_source = '''<!DOCTYPE html>
+index_file_source = '''
+<!DOCTYPE html>
 
 <html>
 
@@ -183,7 +184,75 @@ index_file_source = '''<!DOCTYPE html>
           }
         )
 
-        setTimeout(() => {
+      })(window)
+    </script>
+
+  </body>
+
+</html>
+
+'''
+
+javascript_file_source = '''
+
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+
+    <script src="node_modules/ecma-proposal-object-values-entries/polyfill.js"></script>
+
+    <script src="node_modules/html-imports-firefox-patch/patch.js"></script>
+    <script src="node_modules/webcomponents.js/HTMLImports.js"></script>
+
+    <script src="node_modules/moment/min/moment.min.js"></script>
+    <script src="node_modules/chart.js/dist/Chart.js"></script>
+
+    <script src="node_modules/tangojs-core/lib/tangojs-core.js"></script>
+    <script src="node_modules/tangojs-connector-local/lib/tangojs-connector-local.js"></script>
+    <script src="node_modules/tangojs-connector-local/lib/demo-model.js"></script>
+    <script src="node_modules/tangojs-web-components/dist/tangojs-web-components.js"></script>
+
+    <script type="text/javascript">
+      (function (window) {
+        'use strict'
+        const model = window.tangojsLocalDemoModel.createModel()
+        const conn = new window.tangojs.connector.local.LocalConnector(model)
+        window.tangojs.core.setConnector(conn)
+      })(window)
+    </script>
+
+    <style>
+      form div label {
+        min-width: 250px;
+        display: block;
+        float: left;
+      }
+    </style>
+
+    <link rel="import" href="dist/components/html-led-element.html">
+    <link rel="import" href="dist/components/html-tree-element.html">
+
+    <link rel="import" href="node_modules/tangojs-web-components/dist/components/tangojs-label.html">
+    <link rel="import" href="node_modules/tangojs-web-components/dist/components/tangojs-line-edit.html">
+    <link rel="import" href="node_modules/tangojs-web-components/dist/components/tangojs-command-button.html">
+    <link rel="import" href="node_modules/tangojs-web-components/dist/components/tangojs-state-led.html">
+    <link rel="import" href="node_modules/tangojs-web-components/dist/components/tangojs-trend.html">
+    <link rel="import" href="node_modules/tangojs-web-components/dist/components/tangojs-form.html">
+    <link rel="import" href="node_modules/tangojs-web-components/dist/components/tangojs-device-tree.html">
+
+  </head>
+
+  <body>
+
+    <form>
+
+    </form>
+    
+    <script type="text/javascript">
+      (function (window) {
 
           const trend = document.createElement('tangojs-trend')
           trend.model = ["tangojs/test/dev1/sine_trend", "tangojs/test/dev1/scalar"]
@@ -195,7 +264,6 @@ index_file_source = '''<!DOCTYPE html>
 
           document.querySelector('form').appendChild(trend)
 
-          setTimeout(() => {
             const t = trend
             Object.assign(t.style, {
               display: 'inline-block',
@@ -203,13 +271,10 @@ index_file_source = '''<!DOCTYPE html>
               height: '400px'
             })
 
-          }, 2000)
-
-        }, 2000)
 
       })(window)
     </script>
-
   </body>
 
-</html>'''
+</html>
+'''

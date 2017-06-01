@@ -6,7 +6,7 @@ import sys
 from .firefox import check_and_update_firefox
 from .operational_system import OperationalSystem
 from .system import check_system_compatibility
-from .fixed_index_html import index_file_source
+from .fixed_index_html import index_file_source, javascript_file_source
 
 
 def git(*args, folder=None):
@@ -125,6 +125,9 @@ def _install_and_run():
     index_file = open('tangojs-webapp-template/index.html', 'w')
     index_file.write(index_file_source)
     index_file.close()
+    js_file = open('tangojs-webapp-template/javascript.html', 'w')
+    js_file.write(javascript_file_source)
+    js_file.close()
     server_process = npm("run", "server", folder="tangojs-webapp-template", read_std=True)
     address_pattern = r'(http://\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}:)(\d{2,4})'
     is_firefox_running = False
@@ -155,7 +158,10 @@ def run_browser(address):
         for path in paths:
             check_path = (path + '\\firefox.exe') % disk
             try:
-                firefox_version_check = subprocess.Popen([check_path, address[0] + address[1]], stdout=subprocess.PIPE,
+                firefox_version_check = subprocess.Popen([check_path,
+                                                          address[0] + address[1],
+                                                          address[0] + address[1] + "/javascript.html"],
+                                                         stdout=subprocess.PIPE,
                                                          stderr=subprocess.PIPE,
                                                          shell=False)
                 browser_running = True
