@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
 import os
-from setuptools import setup, find_packages
+try:
+    from setuptools import setup
+    from setuptools import find_packages
+except ImportError:
+    from distutils.core import setup
 
 # Read function
 def safe_read(fname):
@@ -20,5 +24,10 @@ setup(name="tangojs-demo",
       packages=find_packages(),
       package_data={'tangojsdemo': ['images/*.png']},
       data_files=[('/usr/share/applications', ['tangojs-demo.desktop'])],
-      entry_points={'console_scripts': ['runtangojsdemo = tangojsdemo:main' ]}
+      zip_safe = True,
+      entry_points={'console_scripts': ['runtangojsdemo = tangojsdemo:main' ]},
+      extras_require={
+         ':python_version <= "3.4"': [
+                'setuptools==33.1.1'
+      ]}
       )
