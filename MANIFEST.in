@@ -1,5 +1,8 @@
 include tangojsdemo/images/*
 include tangojsdemo/modules/*
 include tangojsdemo/readme/*
-include scripts/runtangojsdemo
-include maxiv-r3-r3vacca.desktop
+
+# added by check_manifest.py
+include *.md
+include *.txt
+recursive-include tangojsdemo *.html

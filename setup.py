@@ -3,6 +3,7 @@
 import os
 import sys
 from setuptools import setup, find_packages
+from sys import platform
 
 # Read function
 def safe_read(fname):
@@ -21,6 +22,9 @@ else:
     # SystemExit
     sys.exit('! Exception ! \nIncorrect python version: %s' % python_version)
 
+data_files = []
+if platform == "linux" or platform == "linux2":
+    data_files = [('/usr/share/applications',['tangojs-demo.desktop'])]
 
 # Setup
 setup(name="tangojs-demo",
@@ -31,7 +35,7 @@ setup(name="tangojs-demo",
       include_package_data=True,
       packages=find_packages(),
       package_data={'tangojsdemo': ['images/*.png']},
-      data_files=[('/usr/share/applications', ['tangojs-demo.desktop'])],
+      data_files=list(data_files),
       entry_points={'console_scripts': ['runtangojsdemo = tangojsdemo:main' ]},
       install_requires=install_requires,
       )
