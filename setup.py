@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
 import os
-try:
-    from setuptools import setup
-    from setuptools import find_packages
-except ImportError:
-    from distutils.core import setup
+import sys
+from setuptools import setup, find_packages
+from sys import platform
 
 # Read function
 def safe_read(fname):
@@ -13,6 +11,20 @@ def safe_read(fname):
         return open(os.path.join(os.path.dirname(__file__), fname)).read()
     except IOError:
         return ""
+
+# install_requires
+install_requires = ['wheel']
+
+python_version = sys.version_info
+if python_version >= (3,4):
+    install_requires.append('setuptools==33.1.1')
+else:
+    # SystemExit
+    sys.exit('! Exception ! \nIncorrect python version: %s' % python_version)
+
+data_files = []
+if platform == "linux" or platform == "linux2":
+    data_files = [('/usr/share/applications',['tangojs-demo.desktop'])]
 
 # Setup
 setup(name="tangojs-demo",
@@ -23,11 +35,7 @@ setup(name="tangojs-demo",
       include_package_data=True,
       packages=find_packages(),
       package_data={'tangojsdemo': ['images/*.png']},
-      data_files=[('/usr/share/applications', ['tangojs-demo.desktop'])],
-      zip_safe = True,
+      data_files=list(data_files),
       entry_points={'console_scripts': ['runtangojsdemo = tangojsdemo:main' ]},
-      extras_require={
-         ':python_version <= "3.4"': [
-                'setuptools==33.1.1'
-      ]}
+      install_requires=install_requires,
       )
